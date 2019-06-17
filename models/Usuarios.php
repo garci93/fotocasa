@@ -11,12 +11,15 @@ use yii\web\IdentityInterface;
  * @property int $id
  * @property string $nombre
  * @property string $password
- * @property string $auth_key
  * @property string $telefono
  * @property string $poblacion
  */
 class Usuarios extends \yii\db\ActiveRecord implements IdentityInterface
 {
+    const SCENARIO_CREATE = 'create';
+    const SCENARIO_UPDATE = 'update';
+    public $password_repeat;
+
     /**
      * {@inheritdoc}
      */
@@ -31,9 +34,11 @@ class Usuarios extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['nombre', 'password'], 'required'],
-            [['nombre', 'auth_key', 'telefono', 'poblacion'], 'string', 'max' => 255],
+            [['nombre', 'password', 'email', 'telefono'], 'required'],
+            [['nombre', 'telefono'], 'string', 'max' => 255],
             [['password'], 'string', 'max' => 60],
+            [['password', 'password_repeat'], 'required', 'on' => [self::SCENARIO_CREATE]],
+            [['password'], 'compare', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
         ];
     }
 
@@ -46,9 +51,9 @@ class Usuarios extends \yii\db\ActiveRecord implements IdentityInterface
             'id' => 'ID',
             'nombre' => 'Nombre',
             'password' => 'Password',
-            'auth_key' => 'Auth Key',
+            'password-repeat' => 'Password Repeat',
+            'email' => 'E-mail',
             'telefono' => 'Teléfono',
-            'poblacion' => 'Población',
         ];
     }
 
@@ -108,6 +113,9 @@ class Usuarios extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public function validatePassword($password)
     {
+        if ($this->password === null) {
+            return false;
+        }
         return Yii::$app->security->validatePassword($password, $this->password);
     }
 }

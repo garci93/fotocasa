@@ -95,6 +95,21 @@ class UsuariosController extends Controller
         ]);
     }
 
+    public function actionRegistrar()
+    {
+        $model = new Usuarios(['scenario' => Usuarios::SCENARIO_CREATE]);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $identity = $model;
+            Yii::$app->user->login($identity);
+            return $this->goBack();
+        }
+
+        return $this->render('registrar', [
+             'model' => $model,
+         ]);
+    }
+
     /**
      * Deletes an existing Usuarios model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
