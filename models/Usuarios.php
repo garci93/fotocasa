@@ -11,8 +11,8 @@ use yii\web\IdentityInterface;
  * @property int $id
  * @property string $nombre
  * @property string $password
+ * @property string $email
  * @property string $telefono
- * @property string $poblacion
  */
 class Usuarios extends \yii\db\ActiveRecord implements IdentityInterface
 {
@@ -117,5 +117,28 @@ class Usuarios extends \yii\db\ActiveRecord implements IdentityInterface
             return false;
         }
         return Yii::$app->security->validatePassword($password, $this->password);
+    }
+
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+
+        if ($insert) {
+            if ($this->scenario === self::SCENARIO_CREATE) {
+                goto salto;
+            }
+        } elseif ($this->scenario === self::SCENARIO_UPDATE) {
+            if ($this->password === '') {
+                $this->password = $this->getOldAttribute('password');
+            } else {
+                salto:
+                $this->password = Yii::$app->security
+                    ->generatePasswordHash($this->password);
+            }
+        }
+
+        return true;
     }
 }
