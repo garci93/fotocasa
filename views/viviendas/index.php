@@ -34,7 +34,14 @@ $this->params['breadcrumbs'][] = $this->title;
             //'num_habitaciones',
             //'area',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'visibleButtons' => [
+                    'update' => function ($model, $key, $index) {
+                        return $model->id % 2 == 0;
+                    },
+                ],
+            ],
         ],
     ]); ?>
 
