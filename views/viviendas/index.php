@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'class' => 'yii\grid\ActionColumn',
                 'visibleButtons' => [
                     'update' => function ($model, $key, $index) {
-                        return $model->id % 2 == 0;
+                        return $model->propietario_id == \Yii::$app->user->id;
                     },
                 ],
             ],

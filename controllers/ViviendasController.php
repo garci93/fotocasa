@@ -5,7 +5,7 @@ namespace app\controllers;
 use app\models\Viviendas;
 use app\models\ViviendasSearch;
 use Yii;
-use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -20,10 +20,18 @@ class ViviendasController extends Controller
     public function behaviors()
     {
         return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
+            'access' => [
+                'class' => AccessControl::className(),
+                'only' => ['view', 'update', 'delete'],
+                'rules' => [
+                    [
+                        'allow' => false,
+                        'verbs' => ['POST'],
+                    ],
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
                 ],
             ],
         ];
